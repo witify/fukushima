@@ -95,7 +95,7 @@
                 .enter()
                 .append("path")
                 .attr("d", geoGenerator)
-                .attr("stroke", "black")
+                .attr("stroke", "rgba(0,0,0,0.2)")
                 .attr("stroke-width", 0.5)
                 .attr("fill", function (d) {
                     return color(d.properties[type]);
@@ -115,7 +115,7 @@
                 .attr("text-anchor", "middle")
                 .attr("font-size", "10px")
                 .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
-                .attr("fill", "black")
+                .attr("fill", "#1e293b")
                 .text(function (d) {
                     if (d.properties.area > 30000) {
                         return d.properties.ward_en;
@@ -143,8 +143,8 @@
                 .append("text")
                 .attr("x", 0)
                 .attr("y", legendHeight + 10)
-                .attr("font-size", "10px")
-                .attr("fill", "black")
+                .attr("font-size", "9px")
+                .attr("fill", "#1e293b")
                 .attr("text-anchor", "start")
                 .text("0");
 
@@ -152,8 +152,8 @@
                 .append("text")
                 .attr("x", legendWidth)
                 .attr("y", legendHeight + 10)
-                .attr("font-size", "10px")
-                .attr("fill", "black")
+                .attr("font-size", "9px")
+                .attr("fill", "#1e293b")
                 .attr("text-anchor", "end")
                 .text(() => {
                     return Math.round(max);
