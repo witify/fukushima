@@ -27,17 +27,32 @@
 
 <script>
 
-    function draw(type, colorScheme) {
+    function draw(type, colorScheme, title) {
         const WIDTH = 700;
         const HEIGHT = 400;
+        const PADDING = {
+            top: 50,
+            right: 50,
+            bottom: 50,
+            left: 50
+        }
 
         // create svg in #app
         const svg = d3
             .select("#app")
             .append("svg")
-            .attr("width", WIDTH)
-            .attr("height", HEIGHT + 100)
-            .attr("viewBox", [0, 0, WIDTH, HEIGHT + 100]);
+            .attr("width", WIDTH + PADDING.left + PADDING.right)
+            .attr("height", HEIGHT + PADDING.top + PADDING.bottom)
+            .attr("viewBox", [0, 0, WIDTH + PADDING.left + PADDING.right, HEIGHT + PADDING.top + PADDING.bottom]);
+
+        svg.append('text')
+            .attr('x', WIDTH / 2)
+            .attr('y', 30)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '20px')
+            .attr('font-weight', '600')
+            .attr('fill', '#1e293b')
+            .text(title);
 
 
         const format = d => `${Math.round(d)}`;
@@ -80,7 +95,7 @@
 
             const geoGenerator = d3.geoPath().projection(projection);
 
-            const g = svg.append("g");
+            const g = svg.append("g").attr("transform", `translate(${PADDING.left}, ${PADDING.top})`);
 
             const paths = g.append('g')
                 .attr('class', 'paths');
@@ -128,7 +143,7 @@
 
             const legend = svg
                 .append("g")
-                .attr("transform", `translate(${100}, ${HEIGHT})`);
+                .attr("transform", `translate(${100}, ${HEIGHT + PADDING.top + PADDING.bottom - 30})`);
 
             const legendWidth = 100;
             const legendHeight = 10;
@@ -162,11 +177,11 @@
 
     }
 
-    draw('waste2022', 'schemeReds');
-    draw('waste2023', 'schemeReds');
-    draw('solar2022', 'schemeGreens');
-    draw('solar2023', 'schemeGreens');
-    draw('intersection', 'schemeBlues');
+    draw('waste2022', 'schemeReds', 'Waste 2022');
+    draw('waste2023', 'schemeReds', 'Waste 2023');
+    draw('solar2022', 'schemeGreens', 'Waste 2023');
+    draw('solar2023', 'schemeGreens', 'Solar 2022');
+    draw('intersection', 'schemeBlues', 'Intersection');
 
 
 
