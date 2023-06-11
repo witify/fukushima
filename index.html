@@ -82,22 +82,29 @@
 
             const g = svg.append("g");
 
-            const states = g
-                .selectAll("g")
+            const paths = g.append('g')
+                .attr('class', 'paths');
+
+            const labels = g.append('g')
+                .attr('class', 'labels');
+
+
+            paths
+                .selectAll("path")
                 .data(data.features)
                 .enter()
-                .append("g")
-                .attr('class', 'state');
-
-            states
                 .append("path")
                 .attr("d", geoGenerator)
                 .attr("stroke", "black")
+                .attr("stroke-width", 0.5)
                 .attr("fill", function (d) {
                     return color(d.properties[type]);
                 })
 
-            states
+            labels
+                .selectAll("text")
+                .data(data.features)
+                .enter()
                 .append("text")
                 .attr("x", function (d) {
                     return geoGenerator.centroid(d)[0];
