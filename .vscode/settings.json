@@ -1,0 +1,14 @@
+{
+    "cSpell.words": [
+        "fukushima",
+        "geopandas",
+        "iloc",
+        "iterrows",
+        "pygeoif"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none",
+    "editor.formatOnSave": true
+}

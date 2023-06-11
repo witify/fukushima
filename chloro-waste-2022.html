@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v7.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v3.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v4.min.js"></script>
+
+<!-- HTML in your document's head -->
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+<style>
+    /* CSS */
+    :root {
+        font-family: 'Inter', sans-serif;
+    }
+
+    @supports (font-variation-settings: normal) {
+        :root {
+            font-family: 'Inter var', sans-serif;
+        }
+    }
+</style>
+
+<div id="app"></div>
+
+<script>
+
+    function draw(type, colorScheme) {
+        const WIDTH = 700;
+        const HEIGHT = 400;
+
+        // create svg in #app
+        const svg = d3
+            .select("#app")
+            .append("svg")
+            .attr("width", WIDTH)
+            .attr("height", HEIGHT + 100)
+            .attr("viewBox", [0, 0, WIDTH, HEIGHT + 100]);
+
+
+        const format = d => `${Math.round(d)}`;
+
+        // read geojson file
+        d3.json("/data/generated/fukushima.geojson").then(function (data) {
+
+            const defs = svg.append("defs");
+
+            const gradientId = 'svg-gradient-' + type + '-' + colorScheme;
+
+            const gradient = defs.append("linearGradient")
+                .attr("id", gradientId)
+                .attr("x1", "0%")
+                .attr("x2", "100%");
+
+            const projection = d3.geoMercator().fitSize([WIDTH, HEIGHT], data);
+
+            const max = d3.max(data.features, d => d.properties[type]);
+
+            const color = d3.scaleQuantize([0, max], d3[colorScheme][3]);
+
+            gradient.append("stop")
+                .attr('class', 'start')
+                .attr("offset", "0%")
+                .attr("stop-color", color(0))
+                .attr("stop-opacity", 1);
+
+            gradient.append("stop")
+                .attr('class', 'start')
+                .attr("offset", "50%")
+                .attr("stop-color", color(max / 2))
+                .attr("stop-opacity", 1);
+
+            gradient.append("stop")
+                .attr('class', 'end')
+                .attr("offset", "100%")
+                .attr("stop-color", color(max))
+                .attr("stop-opacity", 1);
+
+            const geoGenerator = d3.geoPath().projection(projection);
+
+            const g = svg.append("g");
+
+            const states = g
+                .selectAll("g")
+                .data(data.features)
+                .enter()
+                .append("g")
+                .attr('class', 'state');
+
+            states
+                .append("path")
+                .attr("d", geoGenerator)
+                .attr("stroke", "black")
+                .attr("fill", function (d) {
+                    return color(d.properties[type]);
+                })
+
+            states
+                .append("text")
+                .attr("x", function (d) {
+                    return geoGenerator.centroid(d)[0];
+                })
+                .attr("y", function (d) {
+                    return geoGenerator.centroid(d)[1];
+                })
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10px")
+                .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
+                .attr("fill", "black")
+                .text(function (d) {
+                    if (d.properties.area > 30000) {
+                        return d.properties.ward_en;
+                    }
+
+                    return '';
+                });
+
+            // draw legend
+
+            const legend = svg
+                .append("g")
+                .attr("transform", `translate(${100}, ${HEIGHT})`);
+
+            const legendWidth = 100;
+            const legendHeight = 10;
+
+            legend
+                .append("rect")
+                .attr("width", legendWidth)
+                .attr("height", legendHeight)
+                .attr("fill", 'url(#' + gradientId + ')');
+
+            legend
+                .append("text")
+                .attr("x", 0)
+                .attr("y", legendHeight + 10)
+                .attr("font-size", "10px")
+                .attr("fill", "black")
+                .attr("text-anchor", "start")
+                .text("0");
+
+            legend
+                .append("text")
+                .attr("x", legendWidth)
+                .attr("y", legendHeight + 10)
+                .attr("font-size", "10px")
+                .attr("fill", "black")
+                .attr("text-anchor", "end")
+                .text(() => {
+                    return Math.round(max);
+                });
+        });
+
+    }
+
+    draw('waste2022', 'schemeYlOrRd');
+    draw('waste2023', 'schemeYlOrRd');
+    draw('solar2022', 'schemeYlGn');
+    draw('solar2023', 'schemeYlGn');
+    draw('intersection', 'schemeBlues');
+
+
+
+</script>
