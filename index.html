@@ -71,7 +71,15 @@
 
             const projection = d3.geoMercator().fitSize([WIDTH, HEIGHT], data);
 
-            const max = d3.max(data.features, d => d.properties[type]);
+            let max = d3.max(data.features, d => d.properties[type]);
+
+            if (type.includes('waste')) {
+                max = 360;
+            }
+
+            if (type.includes('solar')) {
+                max = 560;
+            }
 
             const color = d3.scaleLinear([0, max], ['white', colorScheme]);
 
@@ -133,7 +141,11 @@
                 .attr("fill", "#1e293b")
                 .text(function (d) {
                     if (d.properties.area > 30000) {
-                        return d.properties.ward_en;
+                        return d.properties.ward_en
+                            .replace(' Shi', '')
+                            .replace(' Machi', '')
+                            .replace(' Mura', '')
+                            .trim();
                     }
 
                     return '';
