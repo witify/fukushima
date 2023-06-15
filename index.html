@@ -189,7 +189,7 @@
 
     }
 
-    function points(title) {
+    function points(title, yearWaste, yearSolar) {
         const WIDTH = 700;
         const HEIGHT = 400;
         const PADDING = {
@@ -221,15 +221,12 @@
 
         Promise.all([
             d3.json("/data/generated/fukushima.geojson"),
-            d3.json("/data/generated/points/Waste_2022_points.geojson"),
-            d3.json("/data/generated/points/Waste_2023_points.geojson"),
-            d3.json("/data/generated/points/Solar_2022_points.geojson"),
-            d3.json("/data/generated/points/Solar_2023_points.geojson"),
+            d3.json("/data/generated/points/Waste_" + yearWaste + "_points.geojson"),
+            d3.json("/data/generated/points/Solar_" + yearSolar + "_points.geojson"),
         ])
             .then(function (data) {
                 const projection = d3.geoMercator().fitSize([WIDTH, HEIGHT], data[0]);
                 const geoGenerator = d3.geoPath().projection(projection);
-
 
                 const paths = g.append('g')
                     .attr('class', 'paths');
@@ -249,10 +246,10 @@
 
                 // Points waste 2022
 
-                const pointsWaste2022 = g.append('g')
-                    .attr('class', 'pointsWaste2022');
+                const waste = g.append('g')
+                    .attr('class', 'waste');
 
-                pointsWaste2022
+                waste
                     .selectAll("circle")
                     .data(data[1].features)
                     .enter()
@@ -271,12 +268,12 @@
 
                 // Points solar 2023
 
-                const pointsSolar2023 = g.append('g')
-                    .attr('class', 'pointsSolar2023');
+                const solar = g.append('g')
+                    .attr('class', 'solar');
 
-                pointsSolar2023
+                solar
                     .selectAll("circle")
-                    .data(data[4].features)
+                    .data(data[2].features)
                     .enter()
                     .append("circle")
                     .attr("cx", function (d) {
@@ -315,7 +312,11 @@
                     .attr("fill", "#64748b")
                     .text(function (d) {
                         if (d.properties.area > 30000) {
-                            return d.properties.ward_en;
+                            return d.properties.ward_en
+                                .replace(' Shi', '')
+                                .replace(' Machi', '')
+                                .replace(' Mura', '')
+                                .trim();
                         }
 
                         return '';
@@ -329,10 +330,11 @@
     chloropleth('waste2023', '#dc2626', 'Waste 2023');
     chloropleth('solar2022', '#16a34a', 'Solar 2022');
     chloropleth('solar2023', '#16a34a', 'Solar 2023');
+
+    points('Points 2022', '2022', '2022');
+    points('Points 2023', '2023', '2023');
+
     chloropleth('intersection', '#3b82f6', 'Intersection');
-
-    points('Points');
-
 
 
 </script>
