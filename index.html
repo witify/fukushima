@@ -27,6 +27,10 @@
 
 <script>
 
+    let cityList = [
+        "Futaba", "Iitate", "Namie", "Okuma", "Tomioka", "Inawashiro", "Koriyama", "Fukushima", "Iwaki", "Shirakawa", "Minamisoma"
+    ];
+
     function chloropleth(type, colorScheme, title) {
         const WIDTH = 700;
         const HEIGHT = 400;
@@ -140,12 +144,15 @@
                 .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
                 .attr("fill", "#1e293b")
                 .text(function (d) {
-                    if (d.properties.area > 30000) {
-                        return d.properties.ward_en
-                            .replace(' Shi', '')
-                            .replace(' Machi', '')
-                            .replace(' Mura', '')
-                            .trim();
+
+                    let cityName = d.properties.ward_en
+                        .replace(' Shi', '')
+                        .replace(' Machi', '')
+                        .replace(' Mura', '')
+                        .trim();
+
+                    if (cityList.includes(cityName)) {
+                        return cityName;
                     }
 
                     return '';
@@ -311,12 +318,14 @@
                     .attr('style', 'font-weight: 400; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
                     .attr("fill", "#64748b")
                     .text(function (d) {
-                        if (d.properties.area > 30000) {
-                            return d.properties.ward_en
-                                .replace(' Shi', '')
-                                .replace(' Machi', '')
-                                .replace(' Mura', '')
-                                .trim();
+                        let cityName = d.properties.ward_en
+                            .replace(' Shi', '')
+                            .replace(' Machi', '')
+                            .replace(' Mura', '')
+                            .trim();
+
+                        if (cityList.includes(cityName)) {
+                            return cityName;
                         }
 
                         return '';
