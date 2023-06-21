@@ -78,11 +78,11 @@
             let max = d3.max(data.features, d => d.properties[type]);
 
             if (type.includes('waste')) {
-                max = 500000
+                max = 4 * 1000 * 1000;
             }
 
             if (type.includes('solar')) {
-                max = 700000
+                max = 6 * 1000 * 1000;
             }
 
             const color = d3.scaleLinear([0, max], ['white', colorScheme]);
