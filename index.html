@@ -78,11 +78,11 @@
             let max = d3.max(data.features, d => d.properties[type]);
 
             if (type.includes('waste')) {
-                max = 360;
+                max = 500000
             }
 
             if (type.includes('solar')) {
-                max = 560;
+                max = 700000
             }
 
             const color = d3.scaleLinear([0, max], ['white', colorScheme]);
@@ -190,7 +190,8 @@
                 .attr("fill", "#1e293b")
                 .attr("text-anchor", "end")
                 .text(() => {
-                    return Math.round(max);
+                    let km2 = max / 1000000;
+                    return (Math.round(km2 * 100) / 100) + 'km²';
                 });
         });
 

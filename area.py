@@ -25,15 +25,17 @@ for index, city in fukushima.iterrows():
     interSolar2022 = gpd.overlay(city, solar2022, how='intersection')
     interSolar2023 = gpd.overlay(city, solar2023, how='intersection')
 
-    fukushima.at[index, 'area'] = city.geometry.area.sum() * 1000000
+    coef = 1000000 * 1239.2026121119  # convert to m^2
+
+    fukushima.at[index, 'area'] = city.geometry.area.sum() * coef
     fukushima.at[index, 'waste2022'] = interWaste2022.geometry.area.sum() * \
-        1000000
+        coef
     fukushima.at[index, 'waste2023'] = interWaste2023.geometry.area.sum() * \
-        1000000
+        coef
     fukushima.at[index, 'solar2022'] = interSolar2022.geometry.area.sum() * \
-        1000000
+        coef
     fukushima.at[index, 'solar2023'] = interSolar2023.geometry.area.sum() * \
-        1000000
+        coef
     fukushima.at[index, 'intersection'] = (fukushima.iloc[index].solar2023 - fukushima.iloc[index].solar2022) + (
         fukushima.iloc[index].waste2022 - fukushima.iloc[index].waste2023)
 
