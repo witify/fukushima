@@ -346,5 +346,67 @@
 
     chloropleth('intersection', '#3b82f6', 'Intersection');
 
+    stats();
+
+    function stats() {
+        const files = [
+            'Waste_2022.geojson',
+            'Waste_2023.geojson',
+            'Solar_2022.geojson',
+            'Solar_2023.geojson',
+        ];
+
+        function toLabel(value) {
+            let value2 = value / 1000 / 1000;
+            return Math.round(value2 * 1000) / 1000 + 'km²';
+        }
+
+        files.forEach(file => {
+            d3.json("/data/raw/geojson/" + file)
+                .then(function (data) {
+                    let total = 0;
+                    data.features.forEach(feature => {
+                        total += feature.properties.description;
+                    });
+
+                    let mean = d3.mean(data.features, function (d) {
+                        return d.properties.description;
+                    });
+
+                    let median = d3.median(data.features, function (d) {
+                        return d.properties.description;
+                    });
+
+                    let max = d3.max(data.features, function (d) {
+                        return d.properties.description;
+                    });
+
+                    let twelveBiggestValues = data.features.sort(function (a, b) {
+                        return b.properties.description - a.properties.description;
+                    }).slice(0, 12);
+
+                    console.log('-----------------------');
+                    console.log('**' + file + '**');
+                    console.log('');
+                    console.log('Mean: ' + toLabel(mean));
+                    console.log('Median: ' + toLabel(median));
+                    console.log('Max: ' + toLabel(max));
+                    console.log('');
+
+                    console.log('12 biggest values: ');
+                    twelveBiggestValues.forEach(function (value) {
+                        console.log(toLabel(value.properties.description));
+                    });
+
+                    console.log('');
+
+                    console.log('Total: ' + toLabel(total));
+
+                    console.log('');
+                });
+        });
+
+
+    }
 
 </script>
