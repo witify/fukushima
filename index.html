@@ -112,6 +112,13 @@
             const paths = g.append('g')
                 .attr('class', 'paths');
 
+            g.append("svg:image")
+                .attr("xlink:href", "/img/plant.svg")
+                .attr("width", 16)
+                .attr("height", 16)
+                .attr("x", 590)
+                .attr("y", 180);
+
             const labels = g.append('g')
                 .attr('class', 'labels');
 
@@ -140,7 +147,7 @@
                     return geoGenerator.centroid(d)[1];
                 })
                 .attr("text-anchor", "middle")
-                .attr("font-size", "10px")
+                .attr("font-size", "12px")
                 .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
                 .attr("fill", "#1e293b")
                 .text(function (d) {
@@ -186,7 +193,7 @@
                 .append("text")
                 .attr("x", legendWidth)
                 .attr("y", legendHeight + 10)
-                .attr("font-size", "9px")
+                .attr("font-size", "12px")
                 .attr("fill", "#1e293b")
                 .attr("text-anchor", "end")
                 .text(() => {
@@ -194,6 +201,8 @@
                     return (Math.round(km2 * 100) / 100) + 'km²';
                 });
         });
+
+
 
     }
 
@@ -238,6 +247,13 @@
 
                 const paths = g.append('g')
                     .attr('class', 'paths');
+
+                g.append("svg:image")
+                    .attr("xlink:href", "/img/plant.svg")
+                    .attr("width", 16)
+                    .attr("height", 16)
+                    .attr("x", 590)
+                    .attr("y", 180);
 
                 const labels = g.append('g')
                     .attr('class', 'labels');
@@ -334,7 +350,6 @@
             })
 
     }
-
 
     chloropleth('waste2022', '#dc2626', 'Waste 2022');
     chloropleth('waste2023', '#dc2626', 'Waste 2023');
