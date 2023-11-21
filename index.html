@@ -119,16 +119,10 @@
                 const dtrz = g.append('g')
                     .attr('class', 'dtrz');
 
-                g.append("svg:image")
-                    .attr("xlink:href", "/img/plant.svg")
-                    .attr("width", 16)
-                    .attr("height", 16)
-                    .attr("x", 590)
-                    .attr("y", 180);
+                plant(g);
 
                 const labels = g.append('g')
                     .attr('class', 'labels');
-
 
                 paths
                     .selectAll("path")
@@ -279,12 +273,7 @@
                 const solar = g.append('g')
                     .attr('class', 'solar');
 
-                g.append("svg:image")
-                    .attr("xlink:href", "/img/plant.svg")
-                    .attr("width", 16)
-                    .attr("height", 16)
-                    .attr("x", 590)
-                    .attr("y", 180);
+                plant(g);
 
                 const labels = g.append('g')
                     .attr('class', 'labels');
@@ -385,6 +374,43 @@
                         return '';
                     });
             })
+
+
+    }
+
+    function plant(g) {
+        const plant = g.append("g")
+            .attr("class", "plant")
+            .attr("transform", `scale(0.02) translate(30000, 9400)`);
+
+        plant.append("circle")
+            .attr("id", "circle2825")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", 260)
+            .attr("fill", "#ffff00");
+
+        plant.append("circle")
+            .attr("id", "circle6")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", 50);
+
+        plant.append("path")
+            .attr("id", "bld")
+            .attr("d", "M 75,0 A 75,75 0 0 0 37.5,-64.952 L 125,-216.506 A 250,250 0 0 1 250,0 z");
+
+        plant.append("use")
+            .attr("xlink:href", "#bld")
+            .attr("transform", "matrix(-0.5,0.8660254,-0.8660254,-0.5,0,0)")
+            .attr("width", "600")
+            .attr("height", "600");
+
+        plant.append("use")
+            .attr("xlink:href", "#bld")
+            .attr("transform", "matrix(-0.5,-0.8660254,0.8660254,-0.5,0,0)")
+            .attr("width", "600")
+            .attr("height", "600");
 
     }
 
