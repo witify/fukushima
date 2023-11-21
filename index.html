@@ -62,145 +62,166 @@
         const format = d => `${Math.round(d)}`;
 
         // read geojson file
-        d3.json("/data/generated/fukushima.geojson").then(function (data) {
+        Promise.all([
+            d3.json("/data/generated/fukushima.geojson"),
+            d3.json("/data/generated/dtrz.geojson"),
+        ])
+            .then(function (data) {
 
-            const defs = svg.append("defs");
+                const defs = svg.append("defs");
 
-            const gradientId = 'svg-gradient-' + type + '-' + colorScheme;
+                const gradientId = 'svg-gradient-' + type + '-' + colorScheme;
 
-            const gradient = defs.append("linearGradient")
-                .attr("id", gradientId)
-                .attr("x1", "0%")
-                .attr("x2", "100%");
+                const gradient = defs.append("linearGradient")
+                    .attr("id", gradientId)
+                    .attr("x1", "0%")
+                    .attr("x2", "100%");
 
-            const projection = d3.geoMercator().fitSize([WIDTH, HEIGHT], data);
+                const projection = d3.geoMercator().fitSize([WIDTH, HEIGHT], data[0]);
 
-            let max = d3.max(data.features, d => d.properties[type]);
+                let max = d3.max(data[0].features, d => d.properties[type]);
 
-            if (type.includes('waste')) {
-                max = 4 * 1000 * 1000;
-            }
+                if (type.includes('waste')) {
+                    max = 4 * 1000 * 1000;
+                }
 
-            if (type.includes('solar')) {
-                max = 6 * 1000 * 1000;
-            }
+                if (type.includes('solar')) {
+                    max = 6 * 1000 * 1000;
+                }
 
-            const color = d3.scaleLinear([0, max], ['white', colorScheme]);
+                const color = d3.scaleLinear([0, max], ['white', colorScheme]);
 
-            gradient.append("stop")
-                .attr('class', 'start')
-                .attr("offset", "0%")
-                .attr("stop-color", color(0))
-                .attr("stop-opacity", 1);
+                gradient.append("stop")
+                    .attr('class', 'start')
+                    .attr("offset", "0%")
+                    .attr("stop-color", color(0))
+                    .attr("stop-opacity", 1);
 
-            gradient.append("stop")
-                .attr('class', 'start')
-                .attr("offset", "50%")
-                .attr("stop-color", color(max / 2))
-                .attr("stop-opacity", 1);
+                gradient.append("stop")
+                    .attr('class', 'start')
+                    .attr("offset", "50%")
+                    .attr("stop-color", color(max / 2))
+                    .attr("stop-opacity", 1);
 
-            gradient.append("stop")
-                .attr('class', 'end')
-                .attr("offset", "100%")
-                .attr("stop-color", color(max))
-                .attr("stop-opacity", 1);
+                gradient.append("stop")
+                    .attr('class', 'end')
+                    .attr("offset", "100%")
+                    .attr("stop-color", color(max))
+                    .attr("stop-opacity", 1);
 
-            const geoGenerator = d3.geoPath().projection(projection);
+                const geoGenerator = d3.geoPath().projection(projection);
 
-            const g = svg.append("g").attr("transform", `translate(${PADDING.left}, ${PADDING.top})`);
+                const g = svg.append("g").attr("transform", `translate(${PADDING.left}, ${PADDING.top})`);
 
-            const paths = g.append('g')
-                .attr('class', 'paths');
+                const paths = g.append('g')
+                    .attr('class', 'paths');
 
-            g.append("svg:image")
-                .attr("xlink:href", "/img/plant.svg")
-                .attr("width", 16)
-                .attr("height", 16)
-                .attr("x", 590)
-                .attr("y", 180);
+                const dtrz = g.append('g')
+                    .attr('class', 'dtrz');
 
-            const labels = g.append('g')
-                .attr('class', 'labels');
+                g.append("svg:image")
+                    .attr("xlink:href", "/img/plant.svg")
+                    .attr("width", 16)
+                    .attr("height", 16)
+                    .attr("x", 590)
+                    .attr("y", 180);
+
+                const labels = g.append('g')
+                    .attr('class', 'labels');
 
 
-            paths
-                .selectAll("path")
-                .data(data.features)
-                .enter()
-                .append("path")
-                .attr("d", geoGenerator)
-                .attr("stroke", "rgba(0,0,0,0.2)")
-                .attr("stroke-width", 0.5)
-                .attr("fill", function (d) {
-                    return color(d.properties[type]);
-                })
+                paths
+                    .selectAll("path")
+                    .data(data[0].features)
+                    .enter()
+                    .append("path")
+                    .attr("d", geoGenerator)
+                    .attr("stroke", "rgba(0,0,0,0.2)")
+                    .attr("stroke-width", 0.5)
+                    .attr("fill", function (d) {
+                        return color(d.properties[type]);
+                    })
 
-            labels
-                .selectAll("text")
-                .data(data.features)
-                .enter()
-                .append("text")
-                .attr("x", function (d) {
-                    return geoGenerator.centroid(d)[0];
-                })
-                .attr("y", function (d) {
-                    return geoGenerator.centroid(d)[1];
-                })
-                .attr("text-anchor", "middle")
-                .attr("font-size", "12px")
-                .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
-                .attr("fill", "#1e293b")
-                .text(function (d) {
 
-                    let cityName = d.properties.ward_en
-                        .replace(' Shi', '')
-                        .replace(' Machi', '')
-                        .replace(' Mura', '')
-                        .trim();
+                // dtrz shape draw
 
-                    if (cityList.includes(cityName)) {
-                        return cityName;
-                    }
+                dtrz
+                    .selectAll("path")
+                    .data(data[1].features)
+                    .enter()
+                    .append("path")
+                    .attr("d", geoGenerator)
+                    .attr("stroke", "rgba(0,0,0)")
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-dasharray", "4,4")
+                    .attr("fill", 'transparent');
 
-                    return '';
-                });
+                labels
+                    .selectAll("text")
+                    .data(data[0].features)
+                    .enter()
+                    .append("text")
+                    .attr("x", function (d) {
+                        return geoGenerator.centroid(d)[0];
+                    })
+                    .attr("y", function (d) {
+                        return geoGenerator.centroid(d)[1];
+                    })
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "12px")
+                    .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
+                    .attr("fill", "#1e293b")
+                    .text(function (d) {
 
-            // chloropleth legend
+                        let cityName = d.properties.ward_en
+                            .replace(' Shi', '')
+                            .replace(' Machi', '')
+                            .replace(' Mura', '')
+                            .trim();
 
-            const legend = svg
-                .append("g")
-                .attr("transform", `translate(${100}, ${HEIGHT + PADDING.top + PADDING.bottom - 30})`);
+                        if (cityList.includes(cityName)) {
+                            return cityName;
+                        }
 
-            const legendWidth = 100;
-            const legendHeight = 10;
+                        return '';
+                    });
 
-            legend
-                .append("rect")
-                .attr("width", legendWidth)
-                .attr("height", legendHeight)
-                .attr("fill", 'url(#' + gradientId + ')');
+                // chloropleth legend
 
-            legend
-                .append("text")
-                .attr("x", 0)
-                .attr("y", legendHeight + 10)
-                .attr("font-size", "9px")
-                .attr("fill", "#1e293b")
-                .attr("text-anchor", "start")
-                .text("0");
+                const legend = svg
+                    .append("g")
+                    .attr("transform", `translate(${100}, ${HEIGHT + PADDING.top + PADDING.bottom - 30})`);
 
-            legend
-                .append("text")
-                .attr("x", legendWidth)
-                .attr("y", legendHeight + 10)
-                .attr("font-size", "12px")
-                .attr("fill", "#1e293b")
-                .attr("text-anchor", "end")
-                .text(() => {
-                    let km2 = max / 1000000;
-                    return (Math.round(km2 * 100) / 100) + 'km²';
-                });
-        });
+                const legendWidth = 100;
+                const legendHeight = 10;
+
+                legend
+                    .append("rect")
+                    .attr("width", legendWidth)
+                    .attr("height", legendHeight)
+                    .attr("fill", 'url(#' + gradientId + ')');
+
+                legend
+                    .append("text")
+                    .attr("x", 0)
+                    .attr("y", legendHeight + 10)
+                    .attr("font-size", "9px")
+                    .attr("fill", "#1e293b")
+                    .attr("text-anchor", "start")
+                    .text("0");
+
+                legend
+                    .append("text")
+                    .attr("x", legendWidth)
+                    .attr("y", legendHeight + 10)
+                    .attr("font-size", "10px")
+                    .attr("fill", "#1e293b")
+                    .attr("text-anchor", "end")
+                    .text(() => {
+                        let km2 = max / 1000000;
+                        return (Math.round(km2 * 100) / 100) + 'km²';
+                    });
+            });
 
 
 
@@ -240,6 +261,7 @@
             d3.json("/data/generated/fukushima.geojson"),
             d3.json("/data/generated/points/Waste_" + yearWaste + "_points.geojson"),
             d3.json("/data/generated/points/Solar_" + yearSolar + "_points.geojson"),
+            d3.json("/data/generated/dtrz.geojson"),
         ])
             .then(function (data) {
                 const projection = d3.geoMercator().fitSize([WIDTH, HEIGHT], data[0]);
@@ -247,6 +269,16 @@
 
                 const paths = g.append('g')
                     .attr('class', 'paths');
+
+
+                const dtrz = g.append('g')
+                    .attr('class', 'dtrz');
+
+                const waste = g.append('g')
+                    .attr('class', 'waste');
+
+                const solar = g.append('g')
+                    .attr('class', 'solar');
 
                 g.append("svg:image")
                     .attr("xlink:href", "/img/plant.svg")
@@ -268,10 +300,20 @@
                     .attr("stroke-width", 0.5)
                     .attr("fill", 'white')
 
-                // Points waste 2022
+                // dtrz shape draw
 
-                const waste = g.append('g')
-                    .attr('class', 'waste');
+                dtrz
+                    .selectAll("path")
+                    .data(data[3].features)
+                    .enter()
+                    .append("path")
+                    .attr("d", geoGenerator)
+                    .attr("stroke", "rgba(0,0,0)")
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-dasharray", "4,4")
+                    .attr("fill", 'transparent');
+
+                // Points waste 2022
 
                 waste
                     .selectAll("circle")
@@ -291,9 +333,6 @@
                     .attr("opacity", 0.3);
 
                 // Points solar 2023
-
-                const solar = g.append('g')
-                    .attr('class', 'solar');
 
                 solar
                     .selectAll("circle")
@@ -331,9 +370,9 @@
                         return geoGenerator.centroid(d)[1];
                     })
                     .attr("text-anchor", "middle")
-                    .attr("font-size", "10px")
-                    .attr('style', 'font-weight: 400; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
-                    .attr("fill", "#64748b")
+                    .attr("font-size", "12px")
+                    .attr('style', 'font-weight: 600; text-shadow: -0.4px -0.4px 0 #fff, 0.4px -0.4px 0 #fff, -0.4px 0.4px 0 #fff, 0.4px 0.4px 0 #fff;')
+                    .attr("fill", "#1e293b")
                     .text(function (d) {
                         let cityName = d.properties.ward_en
                             .replace(' Shi', '')
